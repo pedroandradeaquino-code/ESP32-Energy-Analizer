@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protetor PZEM</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .title h1 { font-size: 28px; margin-bottom: 5px; }
+        .title p { color: #94a3b8; font-size: 14px; }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+        
+        .dot.connected {
+            background: #10b981;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .config-section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .config-section input {
+            flex: 1;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: #fff;
+        }
+        
+        .config-section button {
+            background: #06b6d4;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 20px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .config-section button:hover {
+            background: #0891b2;
+        }
+        
+        .status-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-box.alert {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border-color: #ef4444;
+        }
+        
+        .status-left h2 {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .status-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        .status-value.inactive {
+            color: #ef4444;
+        }
+        
+        .status-right {
+            text-align: right;
+        }
+        
+        .alert-label { color: #94a3b8; font-size: 12px; margin-bottom: 8px; }
+        .alert-value { font-size: 18px; font-weight: bold; color: #10b981; }
+        .alert-value.danger { color: #ef4444; }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #10b981;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .card-label {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .card-unit {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        
+        .value-v { color: #06b6d4; }
+        .value-a { color: #3b82f6; }
+        .value-w { color: #a855f7; }
+        .value-hz { color: #eab308; }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .btn-action {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-settings {
+            background: #a855f7;
+            color: #fff;
+        }
+        
+        .btn-settings:hover {
+            background: #9333ea;
+        }
+        
+        .btn-history {
+            background: #3b82f6;
+            color: #fff;
+        }
+        
+        .btn-history:hover {
+            background: #2563eb;
+        }
+        
+        .panel {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .panel.show {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .panel h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #06b6d4;
+        }
+        
+        .form-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #334155;
+        }
+        
+        .logs-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #06b6d4;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .log-item.queda { border-left-color: #3b82f6; }
+        .log-item.pico { border-left-color: #ef4444; }
+        .log-item.sobrecorrente { border-left-color: #f59e0b; }
+        .log-item.rearme { border-left-color: #10b981; }
+        .log-item.manual { border-left-color: #a855f7; }
+        
+        .log-info { flex: 1; }
+        .log-type { font-weight: bold; margin-bottom: 2px; }
+        .log-time { color: #94a3b8; font-size: 11px; }
+        .log-values { text-align: right; }
+        .log-values div { margin-bottom: 2px; }
+        
+        .empty-logs {
+            text-align: center;
+            color: #64748b;
+            padding: 32px 16px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            padding-top: 24px;
+            border-top: 1px solid #334155;
+        }
+        
+        @media (max-width: 640px) {
+            .header { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .action-buttons { grid-template-columns: 1fr; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="title">
+                <h1>⚡ Protetor PZEM</h1>
+                <p>Sistema de Proteção Inteligente</p>
+            </div>
+            <div class="status-indicator">
+                <div class="dot" id="statusDot"></div>
+                <span id="connectionText">Desconectado</span>
+            </div>
+        </div>
+        
+        <!-- Configuração de IP -->
+        <div class="config-section">
+            <input type="text" id="apiUrl" placeholder="Ex: 192.168.15.7">
+            <button onclick="testConnection()">Conectar</button>
+        </div>
+        
+        <!-- Status Principal -->
+        <div class="status-box" id="statusBox">
+            <div class="status-left">
+                <h2>Status do Relé</h2>
+                <div class="status-value" id="relayStatus">⚡ ATIVO</div>
+                <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">
+                    <span id="countdownText" style="display: none;">
+                        Reatuação em: <strong id="countdown">0</strong>s
+                    </span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="alert-label">Status da Rede:</div>
+                <div class="alert-value" id="alertStatus">NORMAL</div>
+                <div class="btn-group" style="margin-top: 12px;">
+                    <button class="btn btn-primary" id="btnRearm" style="display: none;" onclick="controlRelay('activate')">
+                        ↻ Rearmar
+                    </button>
+                    <button class="btn btn-danger" id="btnTrip" onclick="controlRelay('deactivate')">
+                        Desarmar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cards de Dados -->
+        <div class="grid">
+            <div class="card">
+                <div class="card-label">Tensão</div>
+                <div class="card-value value-v" id="voltageValue">0.0</div>
+                <div class="card-unit">V</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-label">Corrente</div>
+                <div class="card-value value-a" id="currentValue">0.00</div>
+                <div class="card-unit">A</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-label">Potência</div>
+                <div class="card-value value-w" id="powerValue">0</div>
+                <div class="card-unit">W</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-label">Energia</div>
+                <div class="card-value value-w" id="energyValue">0.0</div>
+                <div class="card-unit">kWh</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-label">Frequência</div>
+                <div class="card-value value-hz" id="frequencyValue">60.0</div>
+                <div class="card-unit">Hz</div>
+            </div>
+        </div>
+        
+        <!-- Botões de Ação -->
+        <div class="action-buttons">
+            <button class="btn-action btn-settings" onclick="togglePanel('settings')">⚙️ Configurações</button>
+            <button class="btn-action btn-history" onclick="togglePanel('logs')">📊 Histórico</button>
+        </div>
+        
+        <!-- Painel de Configurações -->
+        <div class="panel" id="settingsPanel">
+            <h3>Configurações de Proteção</h3>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">Tensão Máxima (V)</label>
+                    <input type="number" id="configVMax" class="form-input" step="0.5" min="200" max="280">
+                    <small class="form-hint">Padrão: 250V</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tensão Mínima (V)</label>
+                    <input type="number" id="configVMin" class="form-input" step="0.5" min="100" max="220">
+                    <small class="form-hint">Padrão: 180V</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Corrente Máxima (A)</label>
+                    <input type="number" id="configIMax" class="form-input" step="0.5" min="5" max="30">
+                    <small class="form-hint">Padrão: 25A</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tempo de Espera (s)</label>
+                    <input type="number" id="configTime" class="form-input" step="1" min="5" max="60">
+                    <small class="form-hint">Padrão: 10s</small>
+                </div>
+            </div>
+            <div class="panel-actions">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveConfig()">✓ Salvar</button>
+                <button class="btn btn-danger" style="flex: 1;" onclick="togglePanel('settings')">✕ Cancelar</button>
+            </div>
+        </div>
+        
+        <!-- Painel de Histórico -->
+        <div class="panel" id="logsPanel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;">Histórico de Eventos</h3>
+                <button class="btn btn-danger" style="width: auto; padding: 8px 12px;" onclick="clearLogs()">🗑️ Limpar</button>
+            </div>
+            <div class="logs-container" id="logsList">
+                <div class="empty-logs">Nenhum evento registrado</div>
+            </div>
+        </div>
+        
+        <!-- Rodapé -->
+        <div class="footer">
+            <p>Protetor de Corrente v2.0 • Sistema de Proteção Inteligente</p>
+        </div>
+    </div>
+    
+    <script>
+        let apiUrl = localStorage.getItem('apiUrl') || '192.168.15.7';
+        let config = { voltageMax: 250, voltageMin: 180, currentMax: 25, deactivationTime: 10 };
+        let isConnected = false;
+        
+        // Inicializar
+        document.getElementById('apiUrl').value = apiUrl;
+        
+        // Conectar ao ESP32
+        async function testConnection() {
+            let url = document.getElementById('apiUrl').value.trim();
+            if (!url) { alert('Insira um IP válido'); return; }
+            if (!url.includes('://')) url = 'http://' + url;
+            apiUrl = url;
+            localStorage.setItem('apiUrl', apiUrl);
+            await fetchData();
+            await fetchConfig();
+            await fetchLogs();
+        }
+        
+        // Buscar dados
+        async function fetchData() {
+            try {
+                const res = await fetch(apiUrl + '/api/data', { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) { isConnected = false; updateStatus(); return; }
+                const data = await res.json();
+                updateUI(data);
+                isConnected = true;
+                updateStatus();
+            } catch (e) {
+                isConnected = false;
+                updateStatus();
+            }
+        }
+        
+        // Buscar config
+        async function fetchConfig() {
+            try {
+                const res = await fetch(apiUrl + '/api/config', { headers: { 'Accept': 'application/json' } });
+                if (res.ok) {
+                    config = await res.json();
+                    updateConfigUI();
+                }
+            } catch (e) {}
+        }
+        
+        // Buscar logs
+        async function fetchLogs() {
+            try {
+                const res = await fetch(apiUrl + '/api/logs', { headers: { 'Accept': 'application/json' } });
+                if (res.ok) {
+                    const data = await res.json();
+                    updateLogs(data.logs ? data.logs.reverse() : []);
+                }
+            } catch (e) {}
+        }
+        
+        // Atualizar UI
+        function updateUI(data) {
+            document.getElementById('voltageValue').textContent = data.voltage.toFixed(1);
+            document.getElementById('currentValue').textContent = data.current.toFixed(2);
+            document.getElementById('powerValue').textContent = Math.round(data.power);
+            document.getElementById('energyValue').textContent = data.energy.toFixed(2);
+            document.getElementById('frequencyValue').textContent = data.frequency.toFixed(1);
+            
+            const statusBox = document.getElementById('statusBox');
+            const relayStatus = document.getElementById('relayStatus');
+            const btnRearm = document.getElementById('btnRearm');
+            const btnTrip = document.getElementById('btnTrip');
+            const alertStatus = document.getElementById('alertStatus');
+            
+            if (data.relayActive) {
+                relayStatus.textContent = '⚡ ATIVO';
+                relayStatus.className = 'status-value';
+                statusBox.className = 'status-box';
+                btnTrip.style.display = 'block';
+                btnRearm.style.display = 'none';
+                document.getElementById('countdownText').style.display = 'none';
+            } else {
+                relayStatus.textContent = '🔴 DESARMADO';
+                relayStatus.className = 'status-value inactive';
+                statusBox.className = 'status-box alert';
+                btnTrip.style.display = 'none';
+                btnRearm.style.display = 'block';
+                document.getElementById('countdownText').style.display = 'block';
+                document.getElementById('countdown').textContent = data.timeToReactivate || 0;
+            }
+            
+            let alertText = 'NORMAL';
+            let alertClass = 'normal';
+            if (data.voltage > config.voltageMax) {
+                alertText = 'PICO';
+                alertClass = 'danger';
+            } else if (data.voltage < config.voltageMin) {
+                alertText = 'QUEDA';
+                alertClass = 'warning';
+            } else if (data.current > config.currentMax) {
+                alertText = 'SOBRECORRENTE';
+                alertClass = 'danger';
+            }
+            
+            alertStatus.textContent = alertText;
+            alertStatus.className = 'alert-value ' + (alertClass === 'danger' ? 'danger' : '');
+        }
+        
+        // Atualizar config UI
+        function updateConfigUI() {
+            document.getElementById('configVMax').value = config.voltageMax;
+            document.getElementById('configVMin').value = config.voltageMin;
+            document.getElementById('configIMax').value = config.currentMax;
+            document.getElementById('configTime').value = config.deactivationTime;
+        }
+        
+        // Atualizar logs
+        function updateLogs(logs) {
+            const container = document.getElementById('logsList');
+            if (logs.length === 0) {
+                container.innerHTML = '<div class="empty-logs">Nenhum evento registrado</div>';
+                return;
+            }
+            container.innerHTML = logs.map(log => {
+                const date = new Date(log.timestamp * 1000).toLocaleString('pt-BR');
+                const type = log.type.toLowerCase().replace('á', 'a').replace('ê', 'e');
+                return `
+                    <div class="log-item ${type}">
+                        <div class="log-info">
+                            <div class="log-type">${log.type}</div>
+                            <div class="log-time">${date}</div>
+                        </div>
+                        <div class="log-values">
+                            <div>${log.voltage.toFixed(1)}V</div>
+                            <div>${log.current.toFixed(2)}A</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Controlar relé
+        async function controlRelay(action) {
+            try {
+                await fetch(apiUrl + '/api/relay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                await new Promise(r => setTimeout(r, 300));
+                await fetchData();
+            } catch (e) {}
+        }
+        
+        // Salvar config
+        async function saveConfig() {
+            const newConfig = {
+                voltageMax: parseFloat(document.getElementById('configVMax').value),
+                voltageMin: parseFloat(document.getElementById('configVMin').value),
+                currentMax: parseFloat(document.getElementById('configIMax').value),
+                deactivationTime: parseInt(document.getElementById('configTime').value)
+            };
+            
+            try {
+                await fetch(apiUrl + '/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newConfig)
+                });
+                config = newConfig;
+                alert('✓ Configurações salvas!');
+                togglePanel('settings');
+            } catch (e) {
+                alert('Erro ao salvar');
+            }
+        }
+        
+        // Limpar logs
+        async function clearLogs() {
+            if (confirm('Limpar todos os logs?')) {
+                try {
+                    await fetch(apiUrl + '/api/logs/clear', { method: 'POST' });
+                    document.getElementById('logsList').innerHTML = '<div class="empty-logs">Nenhum evento registrado</div>';
+                } catch (e) {}
+            }
+        }
+        
+        // Toggle painel
+        function togglePanel(id) {
+            document.getElementById(id + 'Panel').classList.toggle('show');
+        }
+        
+        // Atualizar status
+        function updateStatus() {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('connectionText');
+            if (isConnected) {
+                dot.classList.add('connected');
+                text.textContent = 'Conectado';
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = 'Desconectado';
+            }
+        }
+        
+        // Loop
+        setInterval(fetchData, 500);
+        
+        // Inicializar
+        testConnection();
+    </script>
+</body>
+</html>
